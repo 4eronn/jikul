@@ -14,6 +14,10 @@
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+  <!-- Firebase (untuk sinkronisasi galeri antar akun secara real-time) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -23,22 +27,23 @@
   <div id="customCursor"></div>
 
   <!-- JAPANESE SHOJI SLIDING DOORS INTRO -->
-  <div id="shojiDoorLeft">
-    <div class="text-center p-8 bg-black/85 rounded-3xl border-2 border-rose-400 shadow-2xl backdrop-blur-md">
-      <div class="text-6xl mb-4 animate-bounce">⛩️</div>
-      <h2 class="text-3xl font-display font-extrabold text-white mb-2 font-jp">日本語クラブ 2026</h2>
+  <div id="shojiDoorLeft"></div>
+  <div id="shojiDoorRight"></div>
+  <div id="shojiContent" class="fixed inset-0 z-[10000] flex items-center justify-center px-4">
+    <div class="text-center p-6 sm:p-8 bg-black/85 rounded-3xl border-2 border-rose-400 shadow-2xl backdrop-blur-md max-w-sm w-full">
+      <div class="text-5xl sm:text-6xl mb-4 animate-bounce">⛩️</div>
+      <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white mb-2 font-jp">日本語クラブ 2026</h2>
       <p class="text-xs text-rose-300 font-mono mb-2">Keindahan & Kenangan Bersama</p>
-      <button onclick="openShojiDoors()" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-500 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
+      <button onclick="openShojiDoors()" class="px-6 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-500 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
         🌸 Masuk Ke Galeri Kenangan
       </button>
     </div>
   </div>
-  <div id="shojiDoorRight"></div>
 
   <!-- SAKURA PETAL CANVAS -->
   <canvas id="sakuraCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-10"></canvas>
 
-    <!-- JAPANESE THEME SWITCHER WIDGET (desktop only; mobile version ada di menu hamburger) -->
+  <!-- JAPANESE THEME SWITCHER WIDGET (desktop only; mobile version ada di menu hamburger) -->
   <div class="hidden lg:flex fixed top-24 right-4 z-40 theme-switcher-widget p-1.5 items-center gap-1">
     <button onclick="setTheme('sakura')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-pink-500/20 text-pink-300">🌸 Sakura</button>
     <button onclick="setTheme('shrine')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-rose-500/20 text-rose-300">⛩️ Shrine</button>
@@ -79,7 +84,7 @@
             <i data-lucide="play" class="w-4 h-4"></i>
           </button>
 
-          <div class="text-left min-w-0 flex-1 overflow-hidden hidden xs:block sm:block lg:block">
+          <div class="text-left min-w-0 flex-1 overflow-hidden hidden sm:block">
             <div class="flex items-center gap-1">
               <span id="playlistTrackTitle" class="text-[11px] font-bold text-white truncate block">Memories - Maki Otsuki</span>
             </div>
@@ -356,7 +361,7 @@
       <h3 class="text-xl font-display font-extrabold text-white mb-4">Unggah Momen Baru</h3>
       <form onsubmit="handleUploadMemory(event)" class="space-y-4">
         <input type="text" id="upTitle" required placeholder="Judul Momen" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none" />
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <select id="upCategory" class="bg-black border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
             <option value="bunkasai">Bunkasai</option>
             <option value="belajar">Belajar</option>
@@ -374,7 +379,7 @@
       </form>
     </div>
   </div>
- 
+
   <!-- NOTE MODAL -->
   <div id="noteModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="relative bg-slate-900 border-2 border-amber-500 rounded-3xl max-w-md w-full p-6 shadow-2xl my-auto">
@@ -389,6 +394,7 @@
   </div>
 
   <script src="data.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
