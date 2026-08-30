@@ -1,23 +1,23 @@
-  <!-- JAPANESE THEME SWITCHER WIDGET -->
-  <div class="fixed top-24 right-4 z-40 theme-switcher-widget p-1.5 flex items-center gap-1">
+  <!-- JAPANESE THEME SWITCHER WIDGET (desktop only; mobile version ada di menu hamburger) -->
+  <div class="hidden lg:flex fixed top-24 right-4 z-40 theme-switcher-widget p-1.5 items-center gap-1">
     <button onclick="setTheme('sakura')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-pink-500/20 text-pink-300">🌸 Sakura</button>
     <button onclick="setTheme('shrine')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-rose-500/20 text-rose-300">⛩️ Shrine</button>
   </div>
 
   <!-- NAVIGATION BAR -->
   <header class="sticky top-0 z-40 bg-[#0f121d]/90 backdrop-blur-xl border-b-2 border-rose-500/40 transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:h-20 lg:py-0 flex flex-wrap lg:flex-nowrap items-center justify-between gap-y-2 gap-x-3 relative">
       
       <!-- Brand Logo -->
-      <a href="#" class="flex items-center space-x-3 group">
-        <div class="w-12 h-12 rounded-2xl bg-slate-900 border-2 border-rose-400 flex items-center justify-center text-xs group-hover:scale-105 transition-transform shadow-lg shadow-rose-500/30">
+      <a href="#" class="flex items-center space-x-2 sm:space-x-3 group shrink-0">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-slate-900 border-2 border-rose-400 flex items-center justify-center text-xs group-hover:scale-105 transition-transform shadow-lg shadow-rose-500/30">
           🌸
         </div>
         <div>
-          <span class="font-display font-extrabold text-xs sm:text-xs text-rose-20 font-jp">
+          <span class="font-display font-extrabold text-sm sm:text-xs text-rose-200 font-jp block leading-tight">
             日本語クラブ
           </span>
-          <span class="block text-[9px] tracking-widest text-amber-100 uppercase font-mono font-bold">Japanese Culinary Memory</span>
+          <span class="block text-[8px] sm:text-[9px] tracking-widest text-amber-100 uppercase font-mono font-bold">Japanese Culinary Memory</span>
         </div>
       </a>
 
@@ -31,17 +31,17 @@
       </nav>
 
       <!-- TOP HEADER MUSIC PLAYLIST WIDGET & AUTH CONTROLS -->
-      <div class="flex items-center space-x-3 relative">
+      <div class="flex items-center gap-2 sm:gap-3 order-3 lg:order-none w-full lg:w-auto justify-between lg:justify-end">
         
         <!-- PLAYLIST PLAYER WIDGET (PARALLEL TO LOGIN) -->
-        <div id="playlistWidget" class="flex items-center gap-2.5 bg-slate-900/90 border border-rose-400/50 rounded-2xl px-3 py-1.5 shadow-lg backdrop-blur-md">
+        <div id="playlistWidget" class="flex items-center gap-2 sm:gap-2.5 bg-slate-900/90 border border-rose-400/50 rounded-2xl px-2.5 sm:px-3 py-1.5 shadow-lg backdrop-blur-md flex-1 lg:flex-none min-w-0">
           <button onclick="togglePlayTrack()" id="playlistPlayBtn" class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform shrink-0" title="Play / Pause BGM">
             <i data-lucide="play" class="w-4 h-4"></i>
           </button>
 
-          <div class="text-left max-w-[140px] sm:max-w-[190px] overflow-hidden">
+          <div class="text-left min-w-0 flex-1 overflow-hidden hidden xs:block sm:block lg:block">
             <div class="flex items-center gap-1">
-              <span id="playlistTrackTitle" class="text-[11px] font-bold text-white truncate">Memories - Maki Otsuki</span>
+              <span id="playlistTrackTitle" class="text-[11px] font-bold text-white truncate block">Memories - Maki Otsuki</span>
             </div>
             <!-- SYNCED MINI KARAOKE LYRICS TICKER -->
             <div id="miniLyricDisplay" class="text-[9px] text-amber-300 font-mono italic truncate">
@@ -55,19 +55,39 @@
           </button>
         </div>
 
-        <!-- DROPDOWN PLAYLIST DRAWER -->
-        <div id="playlistDropdown" class="absolute top-14 right-24 z-50 hidden w-64 bg-slate-900 border-2 border-rose-400 rounded-2xl p-3 shadow-2xl">
-          <div class="text-[11px] font-bold text-rose-400 uppercase font-mono mb-2 pb-1 border-b border-slate-800 flex justify-between items-center">
-            <span>🎵 Playlist Japanese Club</span>
-            <button onclick="togglePlaylistDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
-          </div>
-          <div id="playlistTrackList" class="space-y-1 text-xs">
-            <!-- Injected by JS -->
-          </div>
-        </div>
-
         <!-- USER LOGIN NAV CONTAINER -->
-        <div id="userNavContainer" class="flex items-center gap-2"></div>
+        <div id="userNavContainer" class="flex items-center gap-2 shrink-0"></div>
+
+        <!-- MOBILE MENU TOGGLE -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden w-9 h-9 rounded-xl bg-slate-900 border border-rose-400/60 flex items-center justify-center text-rose-300 shrink-0" title="Menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- DROPDOWN PLAYLIST DRAWER -->
+      <div id="playlistDropdown" class="absolute top-full right-0 sm:right-4 mt-2 z-50 hidden w-[calc(100vw-2rem)] max-w-64 bg-slate-900 border-2 border-rose-400 rounded-2xl p-3 shadow-2xl">
+        <div class="text-[11px] font-bold text-rose-400 uppercase font-mono mb-2 pb-1 border-b border-slate-800 flex justify-between items-center">
+          <span>🎵 Playlist Japanese Club</span>
+          <button onclick="togglePlaylistDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
+        </div>
+        <div id="playlistTrackList" class="space-y-1 text-xs">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE NAV MENU (LINKS + THEME SWITCHER) -->
+    <div id="mobileMenu" class="hidden lg:hidden border-t border-rose-500/30 bg-[#0f121d]/95 backdrop-blur-xl px-4 py-4">
+      <nav class="flex flex-col space-y-3 text-xs font-bold uppercase tracking-wider mb-4">
+        <a href="#gallery" onclick="closeMobileMenu()" class="hover:text-rose-300 transition-colors">Galeri Kenangan</a>
+        <a href="#members" onclick="closeMobileMenu()" class="hover:text-rose-300 transition-colors">Anggota Club</a>
+        <a href="#timeline" onclick="closeMobileMenu()" class="hover:text-rose-300 transition-colors">Garis Waktu</a>
+        <a href="#omikuji" onclick="closeMobileMenu()" class="hover:text-rose-300 transition-colors">Ramalan Omikuji</a>
+        <a href="#memoryWall" onclick="closeMobileMenu()" class="hover:text-rose-300 transition-colors">Papan Ema</a>
+      </nav>
+      <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
+        <button onclick="setTheme('sakura')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-pink-500/20 text-pink-300">🌸 Sakura</button>
+        <button onclick="setTheme('shrine')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-rose-500/20 text-rose-300">⛩️ Shrine</button>
       </div>
     </div>
   </header>
