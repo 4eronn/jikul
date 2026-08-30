@@ -68,6 +68,7 @@
         <a href="#members" class="hover:text-rose-400 transition-colors">👥 Anggota Club</a>
         <a href="#timeline" class="hover:text-rose-400 transition-colors">📜 Garis Waktu</a>
         <a href="#omikuji" class="hover:text-rose-400 transition-colors">⛩️ Ramalan Omikuji</a>
+        <a href="#quiz" class="hover:text-rose-400 transition-colors">📝 Kuis Nihongo</a>
         <a href="#memoryWall" class="hover:text-rose-400 transition-colors">✍️ Papan Ema</a>
       </nav>
 
@@ -141,6 +142,7 @@
         <a href="#members" onclick="toggleMobileMenu()" class="hover:text-rose-400 py-2 border-b border-white/5 flex items-center gap-2">👥 Anggota Club</a>
         <a href="#timeline" onclick="toggleMobileMenu()" class="hover:text-rose-400 py-2 border-b border-white/5 flex items-center gap-2">📜 Garis Waktu</a>
         <a href="#omikuji" onclick="toggleMobileMenu()" class="hover:text-rose-400 py-2 border-b border-white/5 flex items-center gap-2">⛩️ Ramalan Omikuji</a>
+        <a href="#quiz" onclick="toggleMobileMenu()" class="hover:text-rose-400 py-2 border-b border-white/5 flex items-center gap-2">📝 Kuis Nihongo</a>
         <a href="#memoryWall" onclick="toggleMobileMenu()" class="hover:text-rose-400 py-2 border-b border-white/5 flex items-center gap-2">✍️ Papan Ema</a>
       </nav>
     </div>
@@ -272,6 +274,23 @@
       <button onclick="drawOmikuji()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
         🎲 Kocok Ramalan Kuil
       </button>
+    </div>
+  </section>
+
+  <!-- NIHONGO CLUB TRIVIA QUIZ -->
+  <section id="quiz" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/40 text-rose-300 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+        <span>📝 UJI WAWASAN</span>
+      </div>
+      <h2 class="text-2xl sm:text-4xl font-display font-extrabold text-white mb-3 sm:mb-4">Kuis Trivia Nihongo Club (クイズ)</h2>
+      <p class="text-slate-300 text-xs sm:text-sm">Seberapa dalam pengetahuanmu soal bahasa & budaya Jepang? Coba jawab!</p>
+    </div>
+
+    <div class="glass-card p-6 sm:p-10 rounded-3xl border-2 border-rose-500/40 max-w-2xl mx-auto">
+      <div id="quizContainer">
+        <!-- Injected by JS -->
+      </div>
     </div>
   </section>
 
