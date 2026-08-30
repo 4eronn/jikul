@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCharacterRoster();
   renderSubwayTimeline();
   renderEmaNotes();
+  renderQuiz();
   initPlaylistPlayer();
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -138,7 +139,7 @@ function renderUserNav() {
   const desktopNav = document.getElementById('userNavContainer');
   const mobileNav = document.getElementById('mobileUserNavContainer');
 
-  const isSuperAdmin = currentUser && (currentUser.email === 'mail@jikul.id' || currentUser.isAdmin);
+  const isSuperAdmin = currentUser && currentUser.isAdmin;
 
   if (currentUser) {
     const html = `
@@ -207,7 +208,7 @@ function renderMangaGallery() {
     return;
   }
 
-  const isMailAdmin = currentUser.email === 'mail@jikul.id' || currentUser.isAdmin;
+  const isMailAdmin = currentUser.isAdmin;
   const memories = getAllMemories();
 
   grid.innerHTML = memories.map(item => `
@@ -239,8 +240,8 @@ function renderMangaGallery() {
 }
 
 function deleteMemoryItem(id) {
-  if (!currentUser || currentUser.email !== 'mail@jikul.id') {
-    alert("❌ Hanya akun mail@jikul.id yang memiliki hak akses menghapus galeri!");
+  if (!currentUser || !currentUser.isAdmin) {
+    alert("❌ Hanya Super Admin (Mail) yang memiliki hak akses menghapus galeri!");
     return;
   }
 
@@ -257,15 +258,6 @@ function deleteMemoryItem(id) {
     renderMangaGallery();
     playWebAudioSound('click');
   }
-}
-
-function checkAuthAndOpenUpload() {
-  if (!currentUser) {
-    alert("🔒 Silakan login akun @jikul.id Anda terlebih dahulu untuk mengunggah momen!");
-    openModal('loginModal');
-    return;
-  }
-  openModal('uploadModal');
 }
 
 function handleUploadMemory(e) {
@@ -332,7 +324,7 @@ function renderEmaNotes() {
   const grid = document.getElementById('notesGrid');
   if (!grid) return;
 
-  const isMailAdmin = currentUser && (currentUser.email === 'mail@jikul.id' || currentUser.isAdmin);
+  const isMailAdmin = currentUser && currentUser.isAdmin;
   const customNotes = JSON.parse(localStorage.getItem('nihongo_custom_notes') || '[]');
   const notes = [...customNotes, ...NOTES_DATA];
 
@@ -354,8 +346,8 @@ function renderEmaNotes() {
 }
 
 function deleteEmaNote(id) {
-  if (!currentUser || currentUser.email !== 'mail@jikul.id') {
-    alert("❌ Hanya akun mail@jikul.id yang memiliki hak akses menghapus pesan Ema!");
+  if (!currentUser || !currentUser.isAdmin) {
+    alert("❌ Hanya Super Admin (Mail) yang memiliki hak akses menghapus pesan Ema!");
     return;
   }
 
@@ -857,6 +849,101 @@ function renderSubwayTimeline() {
       <p class="text-xs text-slate-300 leading-relaxed">${s.description}</p>
     </div>
   `).join('');
+}
+
+/* ==========================================================================
+   8. NIHONGO CLUB TRIVIA QUIZ
+   ========================================================================== */
+function renderQuiz() {
+  const container = document.getElementById('quizContainer');
+  if (!container) return;
+
+  if (quizIndex >= QUIZ_QUESTIONS.length) {
+    renderQuizResult(container);
+    return;
+  }
+
+  const q = QUIZ_QUESTIONS[quizIndex];
+  container.innerHTML = `
+    <div class="flex items-center justify-between mb-4 text-xs font-mono text-slate-400">
+      <span>Soal ${quizIndex + 1} / ${QUIZ_QUESTIONS.length}</span>
+      <span>Skor: <strong class="text-amber-300">${quizScore}</strong></span>
+    </div>
+    <h3 class="text-base sm:text-lg font-bold text-white mb-5">${q.question}</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quizOptions">
+      ${q.options.map((opt, idx) => `
+        <button onclick="answerQuiz(${idx})" class="quiz-option-btn text-left px-4 py-3 rounded-xl bg-slate-900/90 border border-rose-500/30 text-xs sm:text-sm text-slate-200 hover:border-rose-400 hover:bg-rose-500/10 transition-all">
+          ${opt}
+        </button>
+      `).join('')}
+    </div>
+    <div id="quizFeedback" class="hidden mt-5 p-4 rounded-xl border text-xs sm:text-sm leading-relaxed"></div>
+  `;
+}
+
+function answerQuiz(selectedIdx) {
+  const q = QUIZ_QUESTIONS[quizIndex];
+  const optionButtons = document.querySelectorAll('#quizOptions .quiz-option-btn');
+  const feedback = document.getElementById('quizFeedback');
+  const isCorrect = selectedIdx === q.answer;
+
+  optionButtons.forEach((btn, idx) => {
+    btn.disabled = true;
+    btn.classList.add('pointer-events-none');
+    if (idx === q.answer) {
+      btn.classList.add('!border-emerald-400', '!bg-emerald-500/20', 'text-emerald-300', 'font-bold');
+    } else if (idx === selectedIdx) {
+      btn.classList.add('!border-red-400', '!bg-red-500/20', 'text-red-300');
+    }
+  });
+
+  if (isCorrect) quizScore++;
+
+  if (feedback) {
+    feedback.classList.remove('hidden');
+    feedback.className = `mt-5 p-4 rounded-xl border text-xs sm:text-sm leading-relaxed ${isCorrect ? 'bg-emerald-500/10 border-emerald-400 text-emerald-200' : 'bg-red-500/10 border-red-400 text-red-200'}`;
+    feedback.innerHTML = `
+      <div class="font-bold mb-1">${isCorrect ? '✅ Benar!' : '❌ Kurang Tepat'}</div>
+      <p>${q.explanation}</p>
+      <button onclick="nextQuizQuestion()" class="mt-4 px-5 py-2.5 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider hover:bg-rose-500 transition-all">
+        ${quizIndex + 1 < QUIZ_QUESTIONS.length ? 'Soal Berikutnya →' : 'Lihat Hasil Akhir →'}
+      </button>
+    `;
+  }
+
+  playWebAudioSound(isCorrect ? 'victory' : 'click');
+  if (isCorrect) triggerConfetti();
+}
+
+function nextQuizQuestion() {
+  quizIndex++;
+  renderQuiz();
+}
+
+function renderQuizResult(container) {
+  const total = QUIZ_QUESTIONS.length;
+  const percent = Math.round((quizScore / total) * 100);
+  let verdict = "Terus semangat belajar bahasa Jepang! 🌱";
+  if (percent === 100) verdict = "Sugoi! Nilai sempurna, kamu jagoan Nihongo Club! 🏆";
+  else if (percent >= 60) verdict = "Yoku dekimashita! Sudah bagus, sedikit lagi sempurna! 🌸";
+
+  container.innerHTML = `
+    <div class="text-center">
+      <div class="text-5xl mb-3">🎉</div>
+      <h3 class="text-xl sm:text-2xl font-display font-extrabold text-white mb-2">Skor Akhir: ${quizScore} / ${total}</h3>
+      <p class="text-xs sm:text-sm text-amber-300 font-mono mb-6">${verdict}</p>
+      <button onclick="restartQuiz()" class="px-6 py-3 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
+        🔄 Ulangi Kuis
+      </button>
+    </div>
+  `;
+  triggerConfetti();
+}
+
+function restartQuiz() {
+  quizIndex = 0;
+  quizScore = 0;
+  renderQuiz();
 }
 
 function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
