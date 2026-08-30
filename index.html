@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id" class="dark" data-theme="sakura">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>日本語クラブ • Japanese Language Club Class Memory (Scenic Edition)</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-[#0f121d] text-slate-100 min-h-screen relative flex flex-col selection:bg-rose-600 selection:text-white">
+
+  <!-- CUSTOM SAKURA MOUSE CURSOR -->
+  <div id="customCursor"></div>
+
+  <!-- JAPANESE SHOJI SLIDING DOORS INTRO -->
+  <div id="shojiDoorLeft">
+    <div class="text-center p-8 bg-black/85 rounded-3xl border-2 border-rose-400 shadow-2xl backdrop-blur-md">
+      <div class="text-6xl mb-4 animate-bounce">⛩️</div>
+      <h2 class="text-3xl font-display font-extrabold text-white mb-2 font-jp">日本語クラブ 2026</h2>
+      <p class="text-xs text-rose-300 font-mono mb-2">Keindahan & Kenangan Bersama</p>
+      <button onclick="openShojiDoors()" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-500 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
+        🌸 Masuk Ke Galeri Kenangan
+      </button>
+    </div>
+  </div>
+  <div id="shojiDoorRight"></div>
+
+  <!-- SAKURA PETAL CANVAS -->
+  <canvas id="sakuraCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-10"></canvas>
+
+  <!-- JAPANESE THEME SWITCHER WIDGET -->
+  <div class="fixed top-24 right-4 z-40 theme-switcher-widget p-1.5 flex items-center gap-1">
+    <button onclick="setTheme('sakura')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-pink-500/20 text-pink-300">🌸 Sakura</button>
+    <button onclick="setTheme('shrine')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 bg-rose-500/20 text-rose-300">⛩️ Shrine</button>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-[#0f121d]/90 backdrop-blur-xl border-b-2 border-rose-500/40 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center space-x-3 group">
+        <div class="w-12 h-12 rounded-2xl bg-slate-900 border-2 border-rose-400 flex items-center justify-center text-xs group-hover:scale-105 transition-transform shadow-lg shadow-rose-500/30">
+          🌸
+        </div>
+        <div>
+          <span class="font-display font-extrabold text-xs sm:text-xs text-rose-20 font-jp">
+            日本語クラブ
+          </span>
+          <span class="block text-[9px] tracking-widest text-amber-100 uppercase font-mono font-bold">Japanese Culinary Memory</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center space-x-6 text-xs font-bold uppercase tracking-wider">
+        <a href="#gallery" class="hover:text-rose-300 transition-colors">Galeri Kenangan</a>
+        <a href="#members" class="hover:text-rose-300 transition-colors">Anggota Club</a>
+        <a href="#timeline" class="hover:text-rose-300 transition-colors">Garis Waktu</a>
+        <a href="#omikuji" class="hover:text-rose-300 transition-colors">Ramalan Omikuji</a>
+        <a href="#memoryWall" class="hover:text-rose-300 transition-colors">Papan Ema</a>
+      </nav>
+
+      <!-- TOP HEADER MUSIC PLAYLIST WIDGET & AUTH CONTROLS -->
+      <div class="flex items-center space-x-3 relative">
+        
+        <!-- PLAYLIST PLAYER WIDGET (PARALLEL TO LOGIN) -->
+        <div id="playlistWidget" class="flex items-center gap-2.5 bg-slate-900/90 border border-rose-400/50 rounded-2xl px-3 py-1.5 shadow-lg backdrop-blur-md">
+          <button onclick="togglePlayTrack()" id="playlistPlayBtn" class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform shrink-0" title="Play / Pause BGM">
+            <i data-lucide="play" class="w-4 h-4"></i>
+          </button>
+
+          <div class="text-left max-w-[140px] sm:max-w-[190px] overflow-hidden">
+            <div class="flex items-center gap-1">
+              <span id="playlistTrackTitle" class="text-[11px] font-bold text-white truncate">Memories - Maki Otsuki</span>
+            </div>
+            <!-- SYNCED MINI KARAOKE LYRICS TICKER -->
+            <div id="miniLyricDisplay" class="text-[9px] text-amber-300 font-mono italic truncate">
+              🎶 Chiisana koro ni wa takaramono deshita...
+            </div>
+          </div>
+
+          <!-- Playlist Menu Button -->
+          <button onclick="togglePlaylistDropdown()" class="p-1 text-slate-400 hover:text-rose-400 transition-colors shrink-0" title="Pilih Playlist Lagu">
+            <i data-lucide="list-music" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- DROPDOWN PLAYLIST DRAWER -->
+        <div id="playlistDropdown" class="absolute top-14 right-24 z-50 hidden w-64 bg-slate-900 border-2 border-rose-400 rounded-2xl p-3 shadow-2xl">
+          <div class="text-[11px] font-bold text-rose-400 uppercase font-mono mb-2 pb-1 border-b border-slate-800 flex justify-between items-center">
+            <span>🎵 Playlist Japanese Club</span>
+            <button onclick="togglePlaylistDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
+          </div>
+          <div id="playlistTrackList" class="space-y-1 text-xs">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- USER LOGIN NAV CONTAINER -->
+        <div id="userNavContainer" class="flex items-center gap-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION WITH NIHONGO PASSPORT CERTIFICATE CARD -->
+  <section class="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-20 reveal-on-scroll">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <div class="lg:col-span-7 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border-2 border-rose-400 bg-slate-900/80 text-rose-300 text-xs font-mono font-bold uppercase tracking-widest mb-6 shadow-md">
+          <span>🌸 KEINDAHAN ALAM & BUDAYA JEPANG</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-display font-extrabold text-white tracking-tight mb-6 leading-tight">
+          日本語クラブ <br />
+          <span class="text-rose-400 font-jp text-3xl sm:text-5xl">
+            Japanese Language Club 2026
+          </span>
+        </h1>
+
+        <div class="bg-slate-900/90 border-l-4 border-rose-500 p-4 rounded-r-2xl mb-8 text-sm sm:text-base font-bold text-slate-200 shadow-md">
+          "一期一会 (Ichigo Ichie) — Setiap pertemuan adalah keindahan tak terulang yang diukir abadi dalam kenangan." 
+        </div>
+
+        <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+          <a href="#gallery" class="px-8 py-3.5 rounded-2xl font-extrabold text-sm uppercase tracking-wider bg-rose-600 text-white border-2 border-white shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+            <i data-lucide="image" class="w-5 h-5"></i> lihat Galeri Kenangan
+          </a>
+          <button onclick="drawOmikuji()" class="px-6 py-3.5 rounded-2xl font-extrabold text-sm uppercase tracking-wider bg-slate-900 text-amber-300 border-2 border-amber-400 hover:bg-amber-400 hover:text-black transition-all flex items-center gap-2">
+            <span>⛩️</span> Ambil Omikuji Ramalan
+          </button>
+        </div>
+      </div>
+
+      <!-- Passport Certificate Card -->
+      <div class="lg:col-span-5 flex justify-center">
+        <div class="passport-card p-6 w-full max-w-sm text-center relative overflow-hidden group">
+          <div class="flex items-center justify-between border-b border-white/20 pb-3 mb-4">
+            <span class="text-xs font-mono text-amber-300 font-bold">SAKURA KIZUNA CERTIFICATE</span>
+            <span class="text-xs font-jp text-rose-300 font-bold">日本語</span>
+          </div>
+
+          <div class="w-28 h-28 mx-auto rounded-full overflow-hidden border-4 border-rose-400 mb-4 shadow-xl">
+            <img src="https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=400&q=80" alt="Sakura Garden" class="w-full h-full object-cover" />
+          </div>
+
+          <h3 class="font-display font-extrabold text-xl text-white mb-1">MEMBERSHIP CERTIFICATE</h3>
+          <p class="text-xs font-jp text-rose-300 font-bold mb-4">桜の絆 • SAKURA KIZUNA 2026</p>
+
+          <button onclick="speakJapaneseWelcome()" class="w-full py-2.5 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-rose-500 transition-all shadow-md">
+            <i data-lucide="volume-2" class="w-4 h-4"></i> Putar Suara Sambutan 🔊
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WASHI PAPER GALLERY SECTION (LOCKED BEHIND LOGIN) -->
+  <section id="gallery" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b-2 border-rose-500/40 gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 text-rose-300 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+          <span>🌸 SCENIC MEMORIES</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white">Galeri Kenangan Indah (ギャラリー)</h2>
+      </div>
+
+      <div id="uploadGalleryBtnContainer">
+        <!-- Rendered by JS if logged in -->
+      </div>
+    </div>
+
+    <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Injected by JS (Shows Lock Banner when !currentUser) -->
+    </div>
+  </section>
+
+  <!-- 3D ANIMATED MEMBER CARDS -->
+  <section id="members" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/40 text-rose-300 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+        <span>KELUARGA NIHONGO CLUB</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white mb-4">Struktur & Anggota Club (メンバー)</h2>
+      <p class="text-slate-300 text-sm">Sentuh kartu anggota untuk memutar (Flip 3D) dan melihat statistik skill!</p>
+    </div>
+
+    <div id="membersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- SCENIC JAPAN TIMELINE -->
+  <section id="timeline" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/40 text-rose-300 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+        <span>PERJALANAN KEBERSAMAAN</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white mb-4">Garis Waktu Perjalanan (タイムライン)</h2>
+    </div>
+
+    <div class="subway-line max-w-3xl mx-auto">
+      <div id="timelineList"></div>
+    </div>
+  </section>
+
+  <!-- OMIKUJI SHRINE FORTUNE TELLER -->
+  <section id="omikuji" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="glass-card p-8 sm:p-12 rounded-3xl border-2 border-amber-500/50 text-center max-w-2xl mx-auto relative overflow-hidden">
+      <div class="text-6xl mb-4">⛩️</div>
+      <h2 class="text-3xl font-display font-extrabold text-white mb-2">Ramalan Omikuji Kuil (おみくじ)</h2>
+      <p class="text-xs text-slate-300 mb-6">Kocok tempat ramalan kuil Jepang untuk melihat keberuntungan belajarmu hari ini!</p>
+
+      <div id="omikujiResultCard" class="hidden bg-slate-900/90 p-6 rounded-2xl border-2 border-amber-400 mb-6">
+        <h3 id="omikujiTitle" class="text-2xl font-jp font-bold text-amber-300 mb-2">大吉</h3>
+        <p id="omikujiQuote" class="text-sm text-slate-200 italic mb-4">"Hari ini keberuntunganmu sangat luar biasa!"</p>
+        <div class="flex justify-center gap-4 text-xs font-mono text-rose-300">
+          <span>Warna Hoki: <strong id="omikujiColor" class="text-white">-</strong></span>
+          <span>Item Hoki: <strong id="omikujiItem" class="text-white">-</strong></span>
+        </div>
+      </div>
+
+      <button onclick="drawOmikuji()" class="px-8 py-3.5 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
+        Kocok Ramalan Kuil
+      </button>
+    </div>
+  </section>
+
+  <!-- WOODEN EMA WISH BOARD -->
+  <section id="memoryWall" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-20 reveal-on-scroll">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 text-rose-300 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+          <span>WOODEN EMA WISH BOARD</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white mb-2">Papan Gantungan Ema Kayu (絵馬)</h2>
+      </div>
+
+      <button onclick="checkAuthAndOpenNoteModal()" class="px-6 py-3 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border border-white shadow-lg hover:bg-rose-500 transition-all">
+        ✍️ Gantung Ema Baru
+      </button>
+    </div>
+
+    <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t-2 border-rose-500/40 bg-black py-12 px-4 sm:px-6 lg:px-8 z-20">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-rose-400 flex items-center justify-center text-lg">
+          🌸
+        </div>
+        <div>
+          <h4 class="font-display font-bold text-slate-200 text-sm">Japanese Language Club • Class of 2026</h4>
+          <p class="text-xs text-slate-500">日本語クラブ • Authenticated Access & Super Admin Edition</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500 text-center">
+        &copy; 2026 Nihongo Club Memories. Clean Login Edition.
+      </p>
+
+      <a href="#" class="text-xs text-rose-400 font-mono hover:underline">↑ Ke Atas Halaman</a>
+    </div>
+  </footer>
+
+  <!-- CUSTOM ONE PIECE SONG AUDIO ELEMENT -->
+  <audio id="bgmAudio" src="bgm.mp3" loop preload="auto"></audio>
+
+  <!-- MODALS -->
+  <!-- LOGIN MODAL (CLEAN WITHOUT EXAMPLE HINTS) -->
+  <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="relative bg-slate-900 border-2 border-rose-500 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl my-auto">
+      <button onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-white">✕</button>
+      <div class="text-center mb-6">
+        <div class="text-4xl mb-2">🌸</div>
+        <h3 class="text-xl font-display font-extrabold text-white">Login Akun Japanese Club</h3>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-mono text-slate-300 mb-1">Email:</label>
+          <input type="email" id="loginUsername" required placeholder="Email @jikul.id" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-rose-400" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono text-slate-300 mb-1">Password:</label>
+          <input type="password" id="loginPassword" required placeholder="Password" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-rose-400" />
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider hover:bg-rose-500 shadow-lg">Login Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="changePasswordModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="relative bg-slate-900 border-2 border-rose-500 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl my-auto">
+      <button onclick="closeModal('changePasswordModal')" class="absolute top-4 right-4 text-white">✕</button>
+      <div class="text-center mb-6">
+        <div class="text-4xl mb-2">🔑</div>
+        <h3 class="text-xl font-display font-extrabold text-white">Ganti Password Akun</h3>
+        <p id="changePassUserLabel" class="text-xs text-rose-300 font-mono mt-1"></p>
+      </div>
+
+      <form onsubmit="handleChangePassword(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-mono text-slate-300 mb-1">Password Lama:</label>
+          <input type="password" id="oldPasswordInput" required placeholder="Masukkan Password Saat Ini" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-rose-400" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono text-slate-300 mb-1">Password Baru:</label>
+          <input type="password" id="newPasswordInput" required placeholder="Masukkan Password Baru" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-rose-400" />
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider hover:bg-rose-500 shadow-lg">Simpan Password Baru</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- UPLOAD MODAL -->
+  <div id="uploadModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="relative bg-slate-900 border-2 border-rose-500 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl my-auto">
+      <button onclick="closeModal('uploadModal')" class="absolute top-4 right-4 text-white">✕</button>
+      <h3 class="text-xl font-display font-extrabold text-white mb-4">Unggah Momen Baru</h3>
+      <form onsubmit="handleUploadMemory(event)" class="space-y-4">
+        <input type="text" id="upTitle" required placeholder="Judul Momen" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none" />
+        <div class="grid grid-cols-2 gap-3">
+          <select id="upCategory" class="bg-black border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+            <option value="bunkasai">Bunkasai</option>
+            <option value="belajar">Belajar</option>
+            <option value="cosplay">Cosplay</option>
+            <option value="wisuda">Wisuda</option>
+            <option value="hangout">Hangout</option>
+          </select>
+          <input type="date" id="upDate" required class="bg-black border border-slate-800 rounded-xl px-3 py-2 text-xs text-white [color-scheme:dark]" />
+        </div>
+        <input type="file" id="upFile" accept="image/*" class="w-full text-xs text-slate-300" />
+        <input type="url" id="upImage" placeholder="Atau link URL gambar..." class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none" />
+        <input type="text" id="upUploader" required placeholder="Nama Kamu" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none" />
+        <textarea id="upDescription" rows="3" placeholder="Cerita singkat..." class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none resize-none"></textarea>
+        <button type="submit" class="w-full py-3 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider">Simpan Momen</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NOTE MODAL -->
+  <div id="noteModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="relative bg-slate-900 border-2 border-amber-500 rounded-3xl max-w-md w-full p-6 shadow-2xl my-auto">
+      <button onclick="closeModal('noteModal')" class="absolute top-4 right-4 text-white">✕</button>
+      <h3 class="text-xl font-display font-extrabold text-white mb-4">Gantungkan Ema Baru</h3>
+      <form onsubmit="handleAddNote(event)" class="space-y-4">
+        <input type="text" id="noteAuthor" required placeholder="Nama Kamu" class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none" />
+        <textarea id="noteContent" required rows="4" placeholder="Tuliskan pesan & harapan..." class="w-full bg-black border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none resize-none"></textarea>
+        <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 text-black font-extrabold text-xs uppercase tracking-wider">Gantung di Kuil</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

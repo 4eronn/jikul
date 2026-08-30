@@ -1,0 +1,202 @@
+/* SERENE & BEAUTIFUL JAPAN VISUAL THEME (NUANSA INDAH NEGARA JEPANG) */
+
+@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #0f121d;
+  --bg-surface: rgba(25, 20, 36, 0.85);
+  --accent-sakura: #ff7597;
+  --accent-crimson: #dc2626;
+  --accent-gold: #f59e0b;
+  --accent-matcha: #4a7c59;
+  --text-main: #fef2f2;
+  --border-color: rgba(255, 117, 151, 0.35);
+  --glow-sakura: rgba(255, 117, 151, 0.5);
+  --glow-gold: rgba(245, 158, 11, 0.5);
+}
+
+[data-theme="sakura"] {
+  --bg-primary: #150b18;
+  --bg-surface: rgba(32, 18, 40, 0.85);
+  --accent-sakura: #ff7597;
+  --accent-crimson: #e11d48;
+  --accent-gold: #fbbf24;
+  --text-main: #fdf2f8;
+  --border-color: rgba(255, 117, 151, 0.4);
+  --glow-sakura: rgba(255, 117, 151, 0.6);
+}
+
+[data-theme="shrine"] {
+  --bg-primary: #120709;
+  --bg-surface: rgba(30, 12, 16, 0.85);
+  --accent-sakura: #f43f5e;
+  --accent-crimson: #b91c1c;
+  --accent-gold: #f59e0b;
+  --text-main: #fff1f2;
+  --border-color: rgba(245, 158, 11, 0.4);
+  --glow-sakura: rgba(220, 38, 38, 0.6);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+.font-jp { font-family: 'Noto Sans JP', 'Kosugi Maru', sans-serif; }
+.font-display { font-family: 'Outfit', sans-serif; }
+
+/* CUSTOM SAKURA CURSOR TRAIL */
+#customCursor {
+  position: fixed;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle, var(--accent-sakura) 0%, transparent 80%);
+  border: 2px solid var(--accent-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s;
+  box-shadow: 0 0 15px var(--accent-sakura);
+}
+
+/* JAPANESE SHOJI SLIDING DOORS INTRO */
+#shojiDoorLeft, #shojiDoorRight {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50vw;
+  background: #180f12;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 9999;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#shojiDoorLeft { left: 0; border-right: 5px solid #a3693f; }
+#shojiDoorRight { right: 0; border-left: 5px solid #a3693f; }
+
+.shoji-open #shojiDoorLeft { transform: translateX(-100%); }
+.shoji-open #shojiDoorRight { transform: translateX(100%); }
+
+/* ANIMATED EQUALIZER BARS */
+.eq-bar {
+  width: 3px;
+  background: var(--accent-sakura);
+  border-radius: 2px;
+  animation: eq-bounce 0.8s ease-in-out infinite alternate;
+}
+.eq-bar:nth-child(1) { height: 16px; animation-delay: 0.1s; }
+.eq-bar:nth-child(2) { height: 24px; animation-delay: 0.3s; }
+.eq-bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
+.eq-bar:nth-child(4) { height: 20px; animation-delay: 0.4s; }
+
+@keyframes eq-bounce {
+  0% { height: 6px; }
+  100% { height: 26px; }
+}
+
+/* 3D FLIP MEMBER CARDS */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  text-align: center;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner,
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.flip-card-front {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.flip-card-back {
+  background: linear-gradient(135deg, rgba(25,20,36,0.95) 0%, rgba(255,117,151,0.2) 100%);
+  border: 2px solid var(--accent-sakura);
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  box-shadow: 0 0 25px var(--glow-sakura);
+}
+
+/* SCROLL REVEAL ANIMATION CLASSES */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ELEGANT WASHI GALLERY CARD STYLING */
+.washi-panel {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.washi-panel:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px var(--glow-sakura);
+  border-color: var(--accent-sakura);
+}
+
+/* FLOATING EMA WOODEN PLAQUES */
+.ema-wooden-plaque {
+  background: linear-gradient(135deg, #3d2618 0%, #24140b 100%);
+  border: 2px solid #a3693f;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 4px 6px 15px rgba(0,0,0,0.6);
+  animation: float-gentle 4s ease-in-out infinite alternate;
+}
+
+@keyframes float-gentle {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-8px) rotate(1deg); }
+}
+
+.passport-card {
+  background: linear-gradient(135deg, rgba(255,117,151,0.2) 0%, rgba(245,158,11,0.15) 100%);
+  border: 2px solid var(--accent-sakura);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px var(--glow-sakura);
+}
