@@ -1,15 +1,7 @@
 // ENRICHED DATA STORE FOR NIHONGO CLUB WITH AUTH ACCOUNTS & SUPER ADMIN PRIVILEGES
 
 const AUTHORIZED_ACCOUNTS = [
-  { email: "ilma@jikul.id", name: "Ilma", isAdmin: false },
-  { email: "amel@jikul.id", name: "Amel", isAdmin: false },
-  { email: "yasha@jikul.id", name: "Yasha", isAdmin: false },
-  { email: "alex@jikul.id", name: "Alex", isAdmin: false },
-  { email: "kevin@jikul.id", name: "Kevin", isAdmin: false },
-  { email: "pira@jikul.id", name: "Pira", isAdmin: false },
-  { email: "sigit@jikul.id", name: "Sigit", isAdmin: false },
-  { email: "zahwa@jikul.id", name: "Zahwa", isAdmin: false },
-  { email: "mail@jikul.id", name: "Mail", isAdmin: true }
+  { email: "jikul@gmail.com", name: "JC", isAdmin: false },
 ];
 
 const DEFAULT_PASSWORD = "112233";
