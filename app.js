@@ -1,4 +1,4 @@
-// SERENE BEAUTIFUL JAPAN APPLICATION ENGINE (LOCKED GALLERY, AUTH ACCOUNTS & MAIL SUPER ADMIN PRIVILEGES)
+// SERENE BEAUTIFUL JAPAN APPLICATION ENGINE (RESPONSIVE MOBILE & DESKTOP ADAPTATION)
 
 let currentUser = null;
 let currentTheme = 'sakura';
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initSakuraPetals();
   initAuth();
-  subscribeMemoriesRealtime();
+  renderMangaGallery();
   renderCharacterRoster();
   renderSubwayTimeline();
   renderEmaNotes();
@@ -25,7 +25,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   1. AUTHENTICATION (9 @JIKUL.ID ACCOUNTS, PASSWORD & SUPER ADMIN)
+   1. MOBILE NAVIGATION DRAWER ENGINE
+   ========================================================================== */
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileNavMenu');
+  if (!menu) return;
+
+  if (menu.classList.contains('closed')) {
+    menu.classList.remove('closed');
+    menu.classList.add('open');
+  } else {
+    menu.classList.remove('open');
+    menu.classList.add('closed');
+  }
+}
+
+/* ==========================================================================
+   2. AUTHENTICATION & RESPONSIVE USER NAV (DESKTOP & MOBILE DRAWER)
    ========================================================================== */
 function getUserPasswordMap() {
   return JSON.parse(localStorage.getItem('nihongo_passwords') || '{}');
@@ -45,7 +61,6 @@ function handleLogin(e) {
   const emailInput = document.getElementById('loginUsername').value.trim().toLowerCase();
   const passInput = document.getElementById('loginPassword').value.trim();
 
-  // Find account in AUTHORIZED_ACCOUNTS
   const matched = AUTHORIZED_ACCOUNTS.find(a => a.email.toLowerCase() === emailInput);
   if (!matched) {
     alert("❌ Email tidak terdaftar dalam anggota Nihongo Club! Gunakan email @jikul.id (contoh: ilma@jikul.id, mail@jikul.id)");
@@ -54,7 +69,7 @@ function handleLogin(e) {
 
   const expectedPass = getUserPassword(matched.email);
   if (passInput !== expectedPass) {
-    alert("❌ Password salah! Default password adalah 112233.");
+    alert("❌ Password salah!");
     return;
   }
 
@@ -120,22 +135,27 @@ function initAuth() {
 }
 
 function renderUserNav() {
-  const c = document.getElementById('userNavContainer');
-  if (!c) return;
+  const desktopNav = document.getElementById('userNavContainer');
+  const mobileNav = document.getElementById('mobileUserNavContainer');
+
+  const isSuperAdmin = currentUser && (currentUser.email === 'mail@jikul.id' || currentUser.isAdmin);
 
   if (currentUser) {
-    const isSuperAdmin = currentUser.email === 'mail@jikul.id' || currentUser.isAdmin;
-    c.innerHTML = `
-      <div class="flex items-center gap-2 bg-slate-900 border border-rose-400 rounded-2xl px-3 py-1.5 text-xs font-mono shadow-lg">
+    const html = `
+      <div class="flex flex-wrap items-center gap-2 bg-slate-900 border border-rose-400 rounded-2xl px-3 py-1.5 text-xs font-mono shadow-lg">
         <span class="text-rose-300 font-bold">${currentUser.name} ${isSuperAdmin ? '👑 (Admin)' : ''}</span>
-        <button onclick="openChangePasswordModal()" class="text-amber-300 font-bold hover:underline px-1" title="Ganti Password">🔑 Ubah Pass</button>
+        <button onclick="openChangePasswordModal()" class="text-amber-300 font-bold hover:underline px-1" title="Ganti Password">🔑 Pass</button>
         <button onclick="handleLogout()" class="text-pink-400 font-bold hover:underline px-1">Logout</button>
       </div>
     `;
+    if (desktopNav) desktopNav.innerHTML = html;
+    if (mobileNav) mobileNav.innerHTML = html;
   } else {
-    c.innerHTML = `
-      <button onclick="openModal('loginModal')" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border border-white shadow-md hover:bg-rose-500 transition-all">Login</button>
+    const html = `
+      <button onclick="openModal('loginModal')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border border-white shadow-md hover:bg-rose-500 transition-all">Login</button>
     `;
+    if (desktopNav) desktopNav.innerHTML = html;
+    if (mobileNav) mobileNav.innerHTML = html;
   }
 
   // Render Upload Button in Gallery section if logged in
@@ -150,7 +170,7 @@ function renderUserNav() {
     } else {
       upContainer.innerHTML = `
         <button onclick="openModal('loginModal')" class="px-5 py-2.5 rounded-xl bg-slate-800 text-amber-300 font-extrabold text-xs uppercase tracking-wider border border-amber-400/50 shadow-lg flex items-center gap-2">
-          Login untuk Unggah
+          🔒 Login untuk Unggah
         </button>
       `;
     }
@@ -158,32 +178,11 @@ function renderUserNav() {
 }
 
 /* ==========================================================================
-   2. WASHI PAPER GALLERY (LOCKED UNTIL LOGIN & MAIL SUPER ADMIN DELETE)
-   SEKARANG SINKRON REAL-TIME ANTAR SEMUA AKUN VIA FIREBASE FIRESTORE
+   3. WASHI PAPER GALLERY (LOCKED UNTIL LOGIN & MAIL SUPER ADMIN DELETE)
    ========================================================================== */
-let liveMemories = []; // cache data terbaru dari Firestore, dipakai semua fungsi render
-
-function subscribeMemoriesRealtime() {
-  if (typeof db === 'undefined') {
-    console.warn('Firestore belum dikonfigurasi. Isi firebase-config.js terlebih dahulu.');
-    liveMemories = [...GALLERY_DATA];
-    renderMangaGallery();
-    return;
-  }
-
-  db.collection('memories').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-    const custom = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    liveMemories = [...custom, ...GALLERY_DATA];
-    renderMangaGallery();
-  }, (err) => {
-    console.error('Gagal memuat galeri real-time:', err);
-    liveMemories = [...GALLERY_DATA];
-    renderMangaGallery();
-  });
-}
-
 function getAllMemories() {
-  return liveMemories.length ? liveMemories : [...GALLERY_DATA];
+  const custom = JSON.parse(localStorage.getItem('nihongo_custom_memories') || '[]');
+  return [...custom, ...GALLERY_DATA];
 }
 
 function renderMangaGallery() {
@@ -193,15 +192,15 @@ function renderMangaGallery() {
   if (!currentUser) {
     // LOCKED BANNER VIEW
     grid.innerHTML = `
-      <div class="col-span-full p-12 rounded-3xl bg-slate-900/90 border-2 border-rose-500/50 text-center max-w-2xl mx-auto shadow-2xl">
-        <div class="text-6xl mb-4 animate-pulse">🔒</div>
-        <h3 class="text-2xl font-display font-extrabold text-white mb-2 font-jp">Galeri Kenangan Terkunci</h3>
+      <div class="col-span-full p-8 sm:p-12 rounded-3xl bg-slate-900/90 border-2 border-rose-500/50 text-center max-w-2xl mx-auto shadow-2xl">
+        <div class="text-5xl sm:text-6xl mb-4 animate-pulse">🔒</div>
+        <h3 class="text-xl sm:text-2xl font-display font-extrabold text-white mb-2 font-jp">Galeri Kenangan Terkunci (🔑)</h3>
         <p class="text-xs text-rose-300 mb-6 font-mono leading-relaxed">
           Foto & kenangan indah anggota Japanese Language Club dikunci demi privasi.<br />
           Silakan login dengan akun email @jikul.id Anda untuk melihat galeri kenangan!
         </p>
-        <button onclick="openModal('loginModal')" class="px-8 py-3.5 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
-          Login Akun Club Sekarang
+        <button onclick="openModal('loginModal')" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-rose-600 text-white font-extrabold text-xs uppercase tracking-wider border-2 border-white shadow-xl hover:scale-105 transition-all">
+          🔑 Login Akun Club Sekarang
         </button>
       </div>
     `;
@@ -219,14 +218,11 @@ function renderMangaGallery() {
         </button>
       ` : ''}
 
-      <div class="relative w-full h-52 rounded-xl overflow-hidden bg-black mb-3 border border-rose-500/30">
+      <div class="relative w-full h-48 sm:h-52 rounded-xl overflow-hidden bg-black mb-3 border border-rose-500/30">
         <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
         <div class="absolute top-2 left-2 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-rose-300 text-[10px] font-bold uppercase border border-rose-500/40">
           ${item.category}
         </div>
-        <button onclick="event.stopPropagation(); downloadMemoryImage('${item.image}', '${(item.title || 'foto').replace(/'/g, "")}')" class="absolute bottom-2 right-2 z-30 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur-md border border-rose-500/40 text-rose-200 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors" title="Download Foto">
-          <i data-lucide="download" class="w-4 h-4"></i>
-        </button>
       </div>
 
       <h4 class="font-extrabold text-base text-white line-clamp-1 mb-1 font-jp">${item.title}</h4>
@@ -240,27 +236,6 @@ function renderMangaGallery() {
       </div>
     </div>
   `).join('');
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-// Download foto galeri — bekerja untuk foto base64 (upload lokal) maupun URL dari internet
-async function downloadMemoryImage(src, filename) {
-  try {
-    const response = await fetch(src);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename || 'nihongo-club-memory';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(blobUrl);
-  } catch (err) {
-    // Fallback kalau fetch gagal karena CORS (foto dari domain luar tanpa izin CORS)
-    window.open(src, '_blank');
-  }
 }
 
 function deleteMemoryItem(id) {
@@ -269,24 +244,24 @@ function deleteMemoryItem(id) {
     return;
   }
 
-  const isCustom = liveMemories.some(m => m.id === id) && GALLERY_DATA.findIndex(g => g.id === id) === -1;
-
   if (confirm("Apakah Anda yakin ingin menghapus foto kenangan ini?")) {
-    if (isCustom && typeof db !== 'undefined') {
-      db.collection('memories').doc(id).delete().catch(err => console.error(err));
-      // onSnapshot akan otomatis update tampilan di semua akun
-    } else {
-      const defaultIdx = GALLERY_DATA.findIndex(g => g.id === id);
-      if (defaultIdx !== -1) GALLERY_DATA.splice(defaultIdx, 1);
-      renderMangaGallery();
+    let custom = JSON.parse(localStorage.getItem('nihongo_custom_memories') || '[]');
+    custom = custom.filter(m => m.id !== id);
+    localStorage.setItem('nihongo_custom_memories', JSON.stringify(custom));
+
+    const defaultIdx = GALLERY_DATA.findIndex(g => g.id === id);
+    if (defaultIdx !== -1) {
+      GALLERY_DATA.splice(defaultIdx, 1);
     }
+
+    renderMangaGallery();
     playWebAudioSound('click');
   }
 }
 
 function checkAuthAndOpenUpload() {
   if (!currentUser) {
-    alert("Silakan login akun @jikul.id Anda terlebih dahulu untuk mengunggah momen!");
+    alert("🔒 Silakan login akun @jikul.id Anda terlebih dahulu untuk mengunggah momen!");
     openModal('loginModal');
     return;
   }
@@ -305,8 +280,9 @@ function handleUploadMemory(e) {
   const uploader = document.getElementById('upUploader').value;
   const description = document.getElementById('upDescription').value;
 
-  const saveMemory = async (imgSrc) => {
+  const saveMemory = (imgSrc) => {
     const newItem = {
+      id: "custom_" + Date.now(),
       title,
       category,
       date,
@@ -314,25 +290,16 @@ function handleUploadMemory(e) {
       image: imgSrc || "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1000&q=80",
       description,
       uploader: uploader || currentUser.name,
-      likes: 1,
-      createdAt: Date.now()
+      likes: 1
     };
 
-    if (typeof db === 'undefined') {
-      alert('❌ Firestore belum dikonfigurasi (lihat firebase-config.js), upload tidak akan tersimpan permanen atau tersinkron ke akun lain.');
-      closeModal('uploadModal');
-      return;
-    }
+    const custom = JSON.parse(localStorage.getItem('nihongo_custom_memories') || '[]');
+    custom.unshift(newItem);
+    localStorage.setItem('nihongo_custom_memories', JSON.stringify(custom));
 
-    try {
-      await db.collection('memories').add(newItem);
-      // onSnapshot otomatis me-refresh galeri di akun ini DAN semua akun lain yang sedang online
-      closeModal('uploadModal');
-      triggerConfetti();
-    } catch (err) {
-      console.error(err);
-      alert('❌ Gagal mengunggah momen. Coba lagi (kemungkinan foto terlalu besar, gunakan foto di bawah 1MB).');
-    }
+    closeModal('uploadModal');
+    renderMangaGallery();
+    triggerConfetti();
   };
 
   if (file) {
@@ -345,26 +312,21 @@ function handleUploadMemory(e) {
 }
 
 function likeMemory(id) {
-  const isCustom = GALLERY_DATA.findIndex(g => g.id === id) === -1;
-
-  if (isCustom && typeof db !== 'undefined') {
-    const target = liveMemories.find(m => m.id === id);
-    const newLikes = (target ? target.likes || 0 : 0) + 1;
-    db.collection('memories').doc(id).update({ likes: newLikes }).catch(err => console.error(err));
-    // onSnapshot otomatis update likes di semua akun
-  } else {
-    const target = GALLERY_DATA.find(m => m.id === id);
-    if (target) {
-      target.likes = (target.likes || 0) + 1;
-      renderMangaGallery();
+  const custom = JSON.parse(localStorage.getItem('nihongo_custom_memories') || '[]');
+  let target = custom.find(m => m.id === id) || GALLERY_DATA.find(m => m.id === id);
+  if (target) {
+    target.likes = (target.likes || 0) + 1;
+    if (custom.some(m => m.id === id)) {
+      localStorage.setItem('nihongo_custom_memories', JSON.stringify(custom));
     }
+    renderMangaGallery();
+    playWebAudioSound('like');
+    triggerConfetti();
   }
-  playWebAudioSound('like');
-  triggerConfetti();
 }
 
 /* ==========================================================================
-   3. WOODEN EMA WISH BOARD (MAIL SUPER ADMIN DELETE PRIVILEGES)
+   4. WOODEN EMA WISH BOARD (MAIL SUPER ADMIN DELETE PRIVILEGES)
    ========================================================================== */
 function renderEmaNotes() {
   const grid = document.getElementById('notesGrid');
@@ -414,7 +376,7 @@ function deleteEmaNote(id) {
 
 function checkAuthAndOpenNoteModal() {
   if (!currentUser) {
-    alert("Silakan login akun @jikul.id Anda terlebih dahulu untuk menggantung harapan Ema!");
+    alert("🔒 Silakan login akun @jikul.id Anda terlebih dahulu untuk menggantung harapan Ema!");
     openModal('loginModal');
     return;
   }
@@ -448,7 +410,7 @@ function handleAddNote(e) {
 }
 
 /* ==========================================================================
-   4. SHOJI DOORS INTRO, VOICE WELCOME, 2-SECOND DELAY & BGM UNMUTE
+   5. SHOJI DOORS INTRO, VOICE WELCOME, 2-SECOND DELAY & BGM UNMUTE
    ========================================================================== */
 function openShojiDoors() {
   document.body.classList.add('shoji-open');
@@ -524,7 +486,9 @@ function speakJapaneseWelcome(onFinishedCallback) {
   }
 }
 
-/* TOP HEADER PLAYLIST PLAYER */
+/* ==========================================================================
+   6. TOP HEADER PLAYLIST PLAYER
+   ========================================================================== */
 function initPlaylistPlayer() {
   const bgm = document.getElementById('bgmAudio');
   if (!bgm) return;
@@ -565,20 +529,6 @@ function renderPlaylistDropdown() {
       <span class="text-[10px] font-mono text-slate-400">${t.artist}</span>
     </button>
   `).join('');
-}
-
-/* ==========================================================================
-   MOBILE HAMBURGER MENU (NAV LINKS + THEME SWITCHER UNTUK LAYAR KECIL)
-   ========================================================================== */
-function toggleMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  if (!menu) return;
-  menu.classList.toggle('hidden');
-}
-
-function closeMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  if (menu) menu.classList.add('hidden');
 }
 
 function togglePlaylistDropdown() {
@@ -634,14 +584,22 @@ function togglePlayTrack() {
 function updatePlaylistPlayBtn() {
   const btn = document.getElementById('playlistPlayBtn');
   if (!btn) return;
-  btn.innerHTML = bgmPlaying ? '<i data-lucide="pause" class="w-4 h-4"></i>' : '<i data-lucide="play" class="w-4 h-4"></i>';
+  btn.innerHTML = bgmPlaying ? '<i data-lucide="pause" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>' : '<i data-lucide="play" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>';
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-/* CUSTOM CURSOR & SCROLL REVEAL */
+/* ==========================================================================
+   7. TOUCH DEVICE & CUSTOM CURSOR ENGINE
+   ========================================================================== */
 function initCustomCursor() {
   const cursor = document.getElementById('customCursor');
   if (!cursor) return;
+
+  // Disable on touch devices
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    cursor.style.display = 'none';
+    return;
+  }
 
   document.addEventListener('mousemove', (e) => {
     cursor.style.left = `${e.clientX}px`;
@@ -690,7 +648,9 @@ function initSakuraPetals() {
   });
 
   const particles = [];
-  for (let i = 0; i < 40; i++) {
+  const particleCount = window.innerWidth < 640 ? 20 : 40; // Optimize for mobile
+
+  for (let i = 0; i < particleCount; i++) {
     particles.push({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -753,15 +713,15 @@ function renderCharacterRoster() {
     <div class="flip-card cursor-pointer" onclick="toggleCardFlip(this)">
       <div class="flip-card-inner">
         <div class="flip-card-front p-6 flex flex-col items-center justify-center">
-          <div class="w-28 h-28 mx-auto rounded-full overflow-hidden border-4 border-rose-400 mb-4 shadow-lg shadow-rose-500/30">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full overflow-hidden border-4 border-rose-400 mb-3 sm:mb-4 shadow-lg shadow-rose-500/30">
             <img src="${m.avatar}" alt="${m.name}" class="w-full h-full object-cover" />
           </div>
           <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold uppercase mb-2">
             ${m.roleBadge}
           </span>
-          <h4 class="font-extrabold text-xl text-white mb-1 font-display">${m.name}</h4>
+          <h4 class="font-extrabold text-lg sm:text-xl text-white mb-1 font-display">${m.name}</h4>
           <span class="text-xs font-jp text-rose-300 font-bold">${m.kanjiName}</span>
-          <span class="mt-4 text-[10px] font-mono text-slate-400">💡 Sentuh untuk Flip 3D</span>
+          <span class="mt-3 sm:mt-4 text-[10px] font-mono text-slate-400">💡 Sentuh untuk Flip 3D</span>
         </div>
 
         <div class="flip-card-back text-left">
@@ -889,9 +849,9 @@ function renderSubwayTimeline() {
 
   container.innerHTML = SUBWAY_TIMELINE.map(s => `
     <div class="subway-station glass-card p-5 sm:p-6 rounded-2xl border border-rose-500/30">
-      <div class="flex flex-wrap items-center gap-2 justify-between mb-2">
-        <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-mono font-bold shrink-0">${s.stationCode}</span>
-        <span class="text-xs font-jp text-rose-300 font-bold text-right">${s.stationName}</span>
+      <div class="flex items-center justify-between mb-2">
+        <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-mono font-bold">${s.stationCode}</span>
+        <span class="text-xs font-jp text-rose-300 font-bold">${s.stationName}</span>
       </div>
       <h3 class="text-base sm:text-lg font-bold text-white mb-2">${s.title}</h3>
       <p class="text-xs text-slate-300 leading-relaxed">${s.description}</p>
