@@ -2,6 +2,7 @@
 
 const AUTHORIZED_ACCOUNTS = [
   { email: "jikul@gmail.com", name: "JC", isAdmin: false },
+
 ];
 
 const DEFAULT_PASSWORD = "112233";
@@ -166,5 +167,34 @@ const QUIZ_QUESTIONS = [
     ],
     answer: 0,
     explanation: "一期一会 (Ichigo Ichie) bermakna merayakan setiap momen pertemuan seolah-olah momen itu hanya terjadi sekali seumur hidup."
+  },
+  {
+    question: "Sistem tulisan yang dipakai untuk kata serapan asing dalam bahasa Jepang disebut?",
+    options: ["Hiragana", "Katakana", "Kanji", "Romaji"],
+    answer: 1,
+    explanation: "Katakana khusus digunakan untuk menulis kata-kata serapan asing, nama negara asing, dan efek suara (onomatope)."
+  },
+  {
+    question: "Level JLPT tertinggi (paling sulit) adalah?",
+    options: ["N5", "N3", "N1", "N2"],
+    answer: 2,
+    explanation: "Semakin kecil angkanya, semakin tinggi levelnya — N1 adalah level JLPT tersulit, sedangkan N5 paling dasar."
+  },
+  {
+    question: "Apa arti dari kata sapaan 'よろしくお願いします' (Yoroshiku Onegaishimasu)?",
+    options: [
+      "Selamat tinggal untuk selamanya",
+      "Mohon bantuan/kerja samanya ke depan",
+      "Selamat makan",
+      "Maaf sudah mengganggu"
+    ],
+    answer: 1,
+    explanation: "Ungkapan ini dipakai saat berkenalan atau memulai kerja sama, bermakna semacam 'mohon bantuannya ya'."
+  },
+  {
+    question: "Festival budaya sekolah/kampus di Jepang biasa disebut?",
+    options: ["Matsuri", "Bunkasai", "Hanami", "Omikuji"],
+    answer: 1,
+    explanation: "文化祭 (Bunkasai) adalah festival budaya yang biasa diadakan sekolah atau kampus di Jepang, mirip acara yang diadakan Nihongo Club."
   }
 ];
