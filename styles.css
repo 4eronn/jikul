@@ -149,6 +149,39 @@ body {
   padding: 1.5rem;
 }
 
+/* HERO PASSPORT / MEMBERSHIP CERTIFICATE CARD */
+.passport-card {
+  background: linear-gradient(160deg, rgba(26, 31, 48, 0.95) 0%, rgba(15, 18, 29, 0.95) 100%);
+  border: 2px solid var(--accent-gold);
+  border-radius: 1.75rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(245, 158, 11, 0.15) inset;
+  position: relative;
+}
+
+.passport-card::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+  border-radius: 1.4rem;
+  pointer-events: none;
+}
+
+.passport-card:hover {
+  border-color: var(--accent-pink);
+  box-shadow: 0 24px 55px rgba(255, 117, 151, 0.25), 0 0 0 1px rgba(255, 117, 151, 0.2) inset;
+}
+
+/* THEME SWITCHER PILL WIDGET */
+.theme-switcher-widget {
+  background: rgba(15, 18, 29, 0.9);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
 /* SUBWAY TIMELINE ALIGNMENT */
 .subway-line {
   position: relative;
