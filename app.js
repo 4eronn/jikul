@@ -509,6 +509,20 @@ function renderPlaylistDropdown() {
   `).join('');
 }
 
+/* ==========================================================================
+   MOBILE HAMBURGER MENU (NAV LINKS + THEME SWITCHER UNTUK LAYAR KECIL)
+   ========================================================================== */
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  if (!menu) return;
+  menu.classList.toggle('hidden');
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  if (menu) menu.classList.add('hidden');
+}
+
 function togglePlaylistDropdown() {
   const dd = document.getElementById('playlistDropdown');
   if (dd) dd.classList.toggle('hidden');
