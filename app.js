@@ -124,7 +124,7 @@ function renderUserNav() {
   if (!c) return;
 
   if (currentUser) {
-    const isSuperAdmin = currentUser.email === 'mail@jikul.id' || currentUser.isAdmin;
+    const isSuperAdmin = currentUser.email === 'jikul@gmail.com' || currentUser.isAdmin;
     c.innerHTML = `
       <div class="flex items-center gap-2 bg-slate-900 border border-rose-400 rounded-2xl px-3 py-1.5 text-xs font-mono shadow-lg">
         <span class="text-rose-300 font-bold">${currentUser.name} ${isSuperAdmin ? '👑 (Admin)' : ''}</span>
@@ -187,7 +187,7 @@ function renderMangaGallery() {
     return;
   }
 
-  const isMailAdmin = currentUser.email === 'mail@jikul.id' || currentUser.isAdmin;
+  const isMailAdmin = currentUser.email === 'jikul@gmail.com' || currentUser.isAdmin;
   const memories = getAllMemories();
 
   grid.innerHTML = memories.map(item => `
@@ -219,7 +219,7 @@ function renderMangaGallery() {
 }
 
 function deleteMemoryItem(id) {
-  if (!currentUser || currentUser.email !== 'mail@jikul.id') {
+  if (!currentUser || currentUser.email !== 'jikul@gmail.com') {
     alert("❌ Hanya akun mail@jikul.id yang memiliki hak akses menghapus galeri!");
     return;
   }
@@ -334,7 +334,7 @@ function renderEmaNotes() {
 }
 
 function deleteEmaNote(id) {
-  if (!currentUser || currentUser.email !== 'mail@jikul.id') {
+  if (!currentUser || currentUser.email !== 'jikul@gmail.com') {
     alert("❌ Hanya akun mail@jikul.id yang memiliki hak akses menghapus pesan Ema!");
     return;
   }
@@ -356,7 +356,7 @@ function deleteEmaNote(id) {
 
 function checkAuthAndOpenNoteModal() {
   if (!currentUser) {
-    alert("Silakan login akun @jikul.id Anda terlebih dahulu untuk menggantung harapan Ema!");
+    alert("Silakan login akun jikul Anda terlebih dahulu untuk menggantung harapan Ema!");
     openModal('loginModal');
     return;
   }
