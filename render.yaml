@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: jc-culinary-backend
-    runtime: python
-    plan: free
-    buildCommand: "echo 'No dependencies to install'"
-    startCommand: "python server.py"
