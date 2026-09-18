@@ -44,7 +44,7 @@ body {
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: transform 0.08s ease-out, width 0.2s, height 0.2s;
-  box-shadow: 0 0 15px var(--accent-pink);
+  box-shadow: 0 0 15px var(--accent-green);
 }
 
 @media (hover: none) or (pointer: coarse) {
