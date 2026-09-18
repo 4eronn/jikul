@@ -80,7 +80,7 @@ body {
 .washi-panel:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 40px rgba(255, 117, 151, 0.25);
-  border-color: var(--accent-pink);
+  border-color: var(--accent-green);
 }
 
 /* 3D FLIP MEMBER CARDS */
@@ -132,7 +132,7 @@ body {
 /* HERO PASSPORT / MEMBERSHIP CERTIFICATE CARD */
 .passport-card {
   background: linear-gradient(160deg, rgba(26, 31, 48, 0.95) 0%, rgba(15, 18, 29, 0.95) 100%);
-  border: 2px solid var(--accent-gold);
+  border: 2px solid var(--accent-green);
   border-radius: 1.75rem;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(245, 158, 11, 0.15) inset;
   position: relative;
@@ -148,7 +148,7 @@ body {
 }
 
 .passport-card:hover {
-  border-color: var(--accent-pink);
+  border-color: var(--accent-green);
   box-shadow: 0 24px 55px rgba(255, 117, 151, 0.25), 0 0 0 1px rgba(255, 117, 151, 0.2) inset;
 }
 
@@ -181,7 +181,7 @@ body {
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(to bottom, var(--accent-pink), var(--accent-gold));
+  background: linear-gradient(to bottom, var(--accent-green), var(--accent-black));
   border-radius: 9999px;
 }
 
